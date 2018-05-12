@@ -1,7 +1,8 @@
 This program is a mandelbrot visualizer. It uses CUDA, which is a C/C++ 
 programming extension created by Nvidia. This allows users to get greatly
 improved performance by running serial computations in parallel on the GPU. 
-It also uses OpenGL for drawing the results to the screen.
+It also uses OpenGL for drawing the results to the screen. Figures 1 - 8
+located in this directory show screenshots of the program in action.
 
 The program works by keeping track of a viewport, which determines which rectangular area 
 of the complex plane can be viewed. The arrow keys can be used to translate 

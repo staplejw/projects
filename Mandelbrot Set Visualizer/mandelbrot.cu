@@ -36,6 +36,7 @@ int * h_out;
 const int ARRAY_SIZE = W * H;
 const int ARRAY_BYTES = ARRAY_SIZE * sizeof(int);
 
+// takes an integer respresenting the number of iterations and uses it to assign RGB values. RGBA data can be exactly stored in a 4-byte int
 __device__ int assignColour(int i) {
 	int val = 0;
 	val += powf(i, 2); // blue
@@ -47,6 +48,7 @@ __device__ int assignColour(int i) {
 	return val;
 }
 
+// given a complex point C and an upper bound, determine the number of iterations until divergence
 __device__ int iterations(complex<float> C, int max) {
 	complex<float> z0(0, 0); //  mandelbrot set defined for z0 = 0 + 0i
 	complex<float> zn; // populated during iteration
@@ -62,6 +64,7 @@ __device__ int iterations(complex<float> C, int max) {
 	return iter;
 }
 
+// process each pixel/thread individually
 __global__ void process(int * d_out, point p, float w, float h, float s, int max){
 	// map block and grid coordinates to pixel coordinates
 	int y_idx = 4 * blockIdx.y + threadIdx.y;
@@ -83,6 +86,7 @@ __global__ void process(int * d_out, point p, float w, float h, float s, int max
 	d_out[idx] = val;
 }
 
+// callback function for drawing the scene
 void display() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -97,6 +101,7 @@ void display() {
     glutPostRedisplay();
 }
 
+// callback function for keyboard keys
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 		case 'w':
@@ -116,6 +121,7 @@ void keyboard(unsigned char key, int x, int y) {
 	}
 }
 
+// callback function for special (arrow) keys
 void special(int key, int x, int y) {
 	switch (key) {
 		case GLUT_KEY_RIGHT:
