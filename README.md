@@ -1,1 +1,1 @@
-# projects
+This repository contains code/projects that I have completed for classes at school or just for fun. 

@@ -1,0 +1,69 @@
+<!-- 
+Justin Staples
+001052815
+February 13th, 2018
+-->
+
+<!-- root element with namespace -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- contact list is a sequence of pals -->
+    <xsd:element name="contacts">
+	<xsd:complexType>
+	<xsd:sequence>
+		<!-- the address book could start out empty and have an unlimimted numbers of pals -->
+		<xsd:element name="pal" minOccurs="0" maxOccurs="unbounded">
+	  	<xsd:complexType>
+	    <xsd:sequence>
+	    	<!-- mandatory name -->
+	  		<xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+	  		<!-- optional nickname -->
+	  		<xsd:element name="nickname" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+	  		<!-- optional birthday -->
+	  		<xsd:element name="birthday" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+	  		<!-- mandatory favorite operating system (Mac or PC or Linux)-->
+	  		<xsd:element name="OS" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+			    	<xsd:restriction base="xsd:string">
+			      		<xsd:pattern value="(Mac|PC|Linux)"/>
+			    	</xsd:restriction>
+			  	</xsd:simpleType>
+	  		</xsd:element>
+	  		<!-- mandatory address -->
+	  		<xsd:element name="address" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+	  		<!-- optional postal code, defined using a regular expression -->
+	  		<xsd:element name="postalcode" minOccurs="0" maxOccurs="1">
+				<xsd:simpleType>
+			    	<xsd:restriction base="xsd:string">
+			    		<!-- this regular expression contains a mandatory space like the example shown in the lab description -->
+			      		<xsd:pattern value="[A-Z][0-9][A-Z] [0-9][A-Z][0-9]"/>
+			    	</xsd:restriction>
+			  	</xsd:simpleType>
+	  		</xsd:element>
+	  		<!-- choice between a phone number and an email. this gives the option of having one or both. the only problem is that it also allows there to be two phone numbers or two emails. -->
+	  		<xsd:choice minOccurs="1" maxOccurs="2">
+	  			<!-- valid phone numbers defined using a regular expression -->
+				<xsd:element name="phonenumber">
+					<xsd:simpleType>
+				    	<xsd:restriction base="xsd:string">
+				    		<!-- for phone numbers of the form: (000) 000-0000 -->
+				      		<xsd:pattern value="\([0-9]{3}\) [0-9]{3}-[0-9]{4}"/>
+				    	</xsd:restriction>
+			  		</xsd:simpleType>
+			  	</xsd:element>
+			  	<!-- valid email address defined using a regular expression -->
+	  			<xsd:element name="email">
+	  				<xsd:simpleType>
+				    	<xsd:restriction base="xsd:string">
+				    		<!-- for email address of the form described in the lab example: letters @ letters . letters-->
+				      		<xsd:pattern value="([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)"/>
+				    	</xsd:restriction>
+			  		</xsd:simpleType>
+	  			</xsd:element>
+	  		</xsd:choice>
+    	</xsd:sequence>
+  		</xsd:complexType>
+        </xsd:element>
+	</xsd:sequence>
+	</xsd:complexType>
+	</xsd:element>
+</xsd:schema> 

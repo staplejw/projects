@@ -1,0 +1,66 @@
+<!-- 
+COMP SCI 4TB3: Lab 4
+Author: Mahmoud Khattab (000853210)
+Partner: Justin Staples (001052815)
+khattm
+!-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="contacts">
+	<xs:complexType>
+	<xs:sequence>
+		<xs:element name="pal" minOccurs="1" maxOccurs="unbounded">
+	  	<xs:complexType>
+	    <xs:sequence>
+
+	  		<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+
+	  		<xs:element name="nickname" type="xs:string" minOccurs="0" maxOccurs="1"/>
+
+	  		<xs:element name="birthday" type="xs:date" minOccurs="0" maxOccurs="1"/>
+
+	  		<xs:element name="os" minOccurs="1" maxOccurs="1">
+	  			<xs:simpleType>
+				    <xs:restriction base="xs:string">
+				      	<xs:enumeration value="Mac"/>
+				        <xs:enumeration value="PC"/>
+				    	<xs:enumeration value="Linux"/>
+				    </xs:restriction>
+				</xs:simpleType>
+	  		</xs:element>
+
+	  		<xs:element name="address" type="xs:string" minOccurs="1" maxOccurs="1"/>
+
+	  		<xs:element name="postal_code" minOccurs="0" maxOccurs="1">
+				<xs:simpleType>
+			    	<xs:restriction base="xs:string">
+			      		<xs:pattern value="[A-Z][0-9][A-Z]\s?[0-9][A-Z][0-9]"/>
+			    	</xs:restriction>
+			  	</xs:simpleType>
+	  		</xs:element>
+
+	  		<xs:choice minOccurs="1" maxOccurs="2">
+				<xs:element name="phone">
+					<xs:simpleType>
+			    	<xs:restriction base="xs:string">
+			      		<xs:pattern value="(\+1)?(\s|-)?\(?[0-9]{3}\)?[0-9]{3}(\s|-)?[0-9]{4}"/>
+			    	</xs:restriction>
+			  		</xs:simpleType>
+			  	</xs:element>
+
+	  			<xs:element name="e-mail">
+	  				<xs:simpleType>
+			    	<xs:restriction base="xs:string">
+			      		<xs:pattern value="([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})"/>
+			    	</xs:restriction>
+			  		</xs:simpleType>
+	  			</xs:element>
+	  		</xs:choice>
+		      		
+    	</xs:sequence>
+  		</xs:complexType>
+        </xs:element>
+	</xs:sequence>
+	</xs:complexType>
+	</xs:element>
+
+</xs:schema> 	 

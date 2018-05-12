@@ -1,0 +1,71 @@
+ 
+CS 4TB3 - Lab 3: Q3
+
+Mahmoud Khattab
+khattm
+000853210
+
+Partner: Justin Staples, staplejw
+
+<html>
+<body>
+
+<h1>CREDIT CARD FRAUD DETECTOR</h1>
+
+<input type="text" id="ccNum">
+<button  type="button" id="burt"
+onclick="document.getElementById('demo').innerHTML = isValidCreditCard(document.getElementById('ccNum').value) ? 'Valid Card Number' : 'Invalid Card Number'" >Check Card</button>
+
+<p id="demo"></p>
+
+<script>
+function isValidCreditCard(ccNumStr){
+
+	// Visa cards start with 4, new are 16 digits, old are 13 digits
+	// Mastercard starts with 51 thru 55, 16 digits
+	// Amex start with 34 or 37 and have 15 digits.
+	// Last digit is checksum calculated using Luhn's algorithm
+	var wellFormed = /4[0-9]{12}|4[0-9]{15}|5[1-5][0-9]{14}|3[47][0-9]{13}/
+
+	var mtch = ccNumStr.match(wellFormed)
+
+	if (mtch == null) return false
+
+
+	// Prep for checksum
+	var l = ccNumStr.length
+	var digits = []
+
+	for (var i = 0; i < l; i++){
+		digits[i] = parseInt(ccNumStr.charAt(i))
+	}
+
+	console.log(digits)
+
+	//Luhn's Alg
+	// First we double every other digit and add the sum of digits of the result starting from the second last
+	for (var i = l-2; i >= 0; i = i - 2){
+		//console.log(i)
+		digits[i] = 2*digits[i]
+		// This is equivalent to summing the digits if the above result is double digit (TRY IT!)
+		if (digits[i] >= 10) digits[i] = digits[i] - 9
+	}
+	console.log(digits)
+
+
+	var sum = 0
+	for (var i = 0; i < l-1; i++){
+		sum += digits[i]
+	}
+	console.log(sum)
+
+
+	 if ((sum*9)%10 == digits[l-1]) return true
+	 	else return false
+
+}
+
+</script>
+
+</body>
+</html> 
