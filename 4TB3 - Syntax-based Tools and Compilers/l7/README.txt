@@ -1,3 +1,0 @@
-I have implemented the symbol table in C++. The source code consists of a single .ccp (st.cpp) file as well as an accompanying header file (st.h). 
-
-There is no separate program for testing. The test cases are set up and run within in the main method in st.cpp. The script that I have provided (script.out) is the executable created from compiling st.cpp. The results of the tests are printed to the console when the executable is run. Test cases were selected to test the basic functionality of each of the symbol table methods. With this approach, there are basic test cases provided for NewObj, OpenScope, CloseScope and Find. 
