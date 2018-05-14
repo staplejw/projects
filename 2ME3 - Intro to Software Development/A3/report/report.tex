@@ -1,0 +1,263 @@
+\documentclass[12pt]{article}
+
+\usepackage{paralist}
+\usepackage{listings}
+\usepackage{amsfonts}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+
+\title{2ME3 Assignment 3}
+\author{Justin Staples (staplejw)}
+\date{March 11, 2017}
+\begin {document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+The purpose of this report is to show the missing parts of the specification for the RegionT and Path Calculation modules. Given below is a brief critique of the interface provided by the modules in this project, as well as the specification for the modules. The Region Module and the Path Calculation Module are given in full at the end with the missing specification details filled in. 
+
+\section* {Critique}
+
+There were a few things I would have changed or considered changing in the interface. 
+
+Firstly, the constructor for RegionT allows an input type of real. Because it does not make sense in this context to allow a negative value for width or height, an excpetion needs to be added to show that  those values give an invalid region. Negative width and height could make sense in some circumstances, but for the lower\_left state variable to remain as is, those values must be positive. I added this as part of the excpetion for RegionT. 
+
+Another aspect of the interface that I considered adding to or changing was to include another data type in the interface called LineT or SegmentT. The interface, as it stands, deals with segments often. Perhaps in some circumstances, it might be desirable to have another data type called SegmentT that is constructed from two instances of PointT. Then, maybe the path could be thought of as a list/sequence of segments, as opposed to points. 
+
+I was also thinking it might be beneficial in some cases to make more of a distinction between the obstacles and the destinations. They are currently both implemented the exact same way, as a GenericList(RegionT). If we wanted to define specific operations for each type of region, it might be better to have them implemented as classes that extend GenericList(RegionT). 
+
+The idea of a path calculation module is quite broad, and there are many different qualities of a path that might need to be studied. As the path calculation module stands now, it is basically a library of different methods for analyzing paths. This library could certainly be added to, and I have come up with a few extra methods that I think might be worth adding. Perhaps new methods could be added called totalRightTurns, or totalLeftTurns that would keep track of which direction the robot has turned. Maybe totalTurns could simply be modified to accomodate this feature. Perhaps there could be a method that analyzes exactly how many times a certain path visits each destination, or a method that returns a real distance that represents the closest that the robot comes to an obstacle over the course of its path. Perhaps another method that returns which quandrant of the map the robot spent the most time in. The path calculation library certainly could be expanded in a number of interesting ways!
+
+Overall, the interface is quite complete, as it offers a wide range of services with a number of different data types. It also offers a generic list module, so it is quite general in this sense. 
+
+In terms of the specification given, I just have a few comments about potential ambiguities. The units of the velocity constant are not stated explicitly anywhere. This could cause a slight problem in terms of defining and implementing certain method. Because arccos always returns an angle in radians, the unit of the angular velocity might need to be adjusted to suit this specification (what if is not given in radians per second? Then the basic formula does not work). As well, it is not made clear what the original orientation of the robot is. We are left to assume that it always starts with the correct orientation for the first segment of the path, but this might not be the case. Perhaps the robot is always facing north to start. In this case, it would usually have to do extra turn to start. 
+
+\newpage
+
+\section* {Region Module}
+
+\subsection* {Template Module}
+
+RegionT
+
+\subsection* {Uses}
+
+PointT, Constants
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+RegionT = ?
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+RegionT & PointT, real, real & RegionT & InvalidRegionException\\
+\hline
+pointInRegion & PointT & boolean & ~\\
+\hline 
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$\mathit{lower\_left}$: PointT {\it //coordinates of the lower left corner of the region}\\
+$\mathit{width}$: real {\it //width of the rectangular region}\\
+$\mathit{height}$: real {\it //height of the rectangular region}
+
+\subsubsection* {State Invariant}
+None
+
+\subsubsection* {Assumptions}
+The RegionT constructor is called for each abstract object before any other access routine is called for that
+object.  The constructor can only be called once.
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent RegionT($p, w, h$):
+\begin{itemize}
+\item transition: $\mathit{lower\_left}, \mathit{width}, \mathit{height} := p, w, h$
+\item output: $out := \mathit{self}$
+\item exception: $exc := ((\neg(p.\mbox{xcrd()} + w \leq \mbox{Constants.MAX\_X})) \vee (\neg(p.\mbox{ycrd()} + h \leq \mbox{Constants.MAX\_Y})) \vee (\neg (w > 0)) \vee (\neg (h > 0)) \Rightarrow
+\mbox{InvalidRegionException}) $
+\end{itemize}
+
+\noindent pointInRegion($p$):
+\begin{itemize}
+\item output: $\mathit{out} := \exists ( q: \mbox{PointT} | (self.\mbox{lower\_left.xcrd()} \leq q.\mbox{xcrd()} \leq self.\mbox{lower\_left.xcrd()} + self.w) \wedge (self.\mbox{lower\_left.ycrd()} \leq q.\mbox{ycrd()} \leq self.\mbox{lower\_left.ycrd()} + self.h) : q.\mbox{dist}(p) < \mbox{Constants.TOLERANCE})$
+\item exception: none
+\end{itemize}
+
+\newpage
+
+\section* {Path Calculation Module}
+
+\subsection* {Module}
+
+PathCalculation
+
+\subsection* {Uses}
+
+Constants, PointT, RegionT, PathT, Obstacles, Destinations, SafeZone, Map
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+is\_validSegment & PointT, PointT & boolean & ~\\
+\hline
+is\_validPath & PathT & boolean & ~\\
+\hline
+is\_shortestPath & PathT & boolean & ~\\
+\hline
+totalDistance & PathT & real & ~\\
+\hline
+totalTurns & PathT & integer & ~\\
+\hline
+estimatedTime & PathT & real & ~\\
+\hline
+%sortPathList & PathListT & PathListT & ~\\
+%\hline
+
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+none
+
+\subsubsection* {State Invariant}
+
+none
+
+\subsubsection* {Assumptions}
+
+none
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent is\_validSegment($p_1, p_2$):
+\begin{itemize}
+
+\item output: $out := \forall (i : \mathbb{N} | 0 \leq i < \mathrm{Map.get\_obstacles.size()} : \forall (t : \mathbb{R} | 0 \leq t \leq 1 : \neg (\mathrm{Map.get\_obstacles().getval(i).pointInRegion}(tp_1 + (1 - t)p_2)))$
+\item exception: none
+
+\end{itemize}
+
+\noindent is\_validPath($p$):
+\begin{itemize}
+\item output: $out := \mbox{start\_and\_end\_safe}(p) \wedge \mbox{all\_rescue\_regions\_visited}(p) \wedge \newline\mbox{all\_segments\_valid}(p) $
+\item exception: none
+\end{itemize}
+
+\noindent is\_shortestPath($p$):
+\begin{itemize}
+\item output: $out := (\neg (\exists (q : \mbox{PathT} | \mbox{is\_validPath}(q) : \mbox{totalDistance}(q) < \mbox{totalDistance}(p)))) \wedge (\mbox{is\_validPath}(p)) $ {\it // p is a valid path and there does not exist any other valid path with total distance less than p}
+\item exception: none
+\end{itemize}
+
+\noindent totalDistance($p$):
+\begin{itemize}
+\item output: $ out := +(i : \mathbb{N} | 0 \leq i < p.\mbox{size()} - 1 : p.\mbox{getval(i).dist}(p.\mbox{getval(i + 1)}) ) $
+\item exception: none
+\end{itemize}
+
+\noindent totalTurns($p$):
+\begin{itemize}
+\item output: $ out :=  +(i : \mathbb{N} | (1 \leq i < p.\mbox{size()} - 1) \wedge (\mbox{changes\_direction(i, p)}) : 1) $ {\it // counts the number of times the robot changes direction, starting at the second point and going until the second last point (turns cannot be made at the first or last point)}
+\item exception: none
+\end{itemize}
+
+\noindent estimatedTime($p$):
+\begin{itemize}
+\item output: $ out := \frac{\mbox{totalDistance(p)}}{\mbox{Constants.VELOCITY\_LINEAR}} + \frac{\mbox{total\_angle(p)}}{\mbox{Constants.VELOCITY\_ANGULAR}} $
+\item exception: none
+\end{itemize}
+
+
+
+\newpage
+
+\subsubsection* {Local Functions}
+\allowbreak
+
+\noindent {\it // for all destinations, there exists a segment, where there exists a point that is in the region}
+
+\noindent all\_rescue\_regions\_visited: PathT $\rightarrow$ boolean
+
+\noindent all\_rescue\_regions\_visited($p$) $\equiv \forall (i : \mathbb{N} | 0 \leq i < \mbox{Map.get\_desinations.size()} : \exists(j : \mathbb{N} | 0 \leq j < p.\mbox{size()} - 1 : \exists(t : \mathbb{R} | 0 \leq t \leq 1 : \mbox{Map.get\_destinations.getval(i).pointInRegion}\newline(tp.\mbox{getval(j) + (1 - t)}p.\mbox{getval(j + 1)}))))$
+
+~\newline
+\noindent {\it // the first point of the path is in the safe zone and the last point of the path is in the safe zone}
+\newline
+\noindent start\_and\_end\_safe: PathT $\rightarrow$ boolean
+
+\noindent start\_and\_end\_safe($p$) $ \equiv (\mbox{Map.get\_safeZone().getval(0).pointInRegion}(p.\mbox{getval(0)})) \wedge \newline(\mbox{Map.get\_safeZone().getval(0).pointInRegion}(p.\mbox{getval}(p.\mbox{size() - 1})) $
+
+~\newline
+\noindent {\it // for all segments in the path, each one is valid}
+
+\noindent all\_segments\_valid: PathT $\rightarrow$ boolean
+
+\noindent all\_segments\_valid($p$) $\equiv \forall (i : \mathbb{N} | 0 \leq i < p.\mbox{size()} - 1 : \mbox{is\_valid\_segment}(p.\mbox{getval(i)}, p.\mbox{getval(i + 1)})) $
+
+~\newline
+\noindent {\it  // the robot changes direction if the turn angle from the previous segment to the next segment is not equal to 0}
+\newline
+\noindent changes\_direction: integer $\times$ PathT $\rightarrow$ boolean
+
+\noindent changes\_direction($i$, $p$) $ \equiv (\mbox{turn\_angle(i, p)} \neq 0) $
+
+~\newline
+\noindent {\it  // uses the inverse cosine function to find the turn angle }
+\newline
+\noindent turn\_angle: integer $\times$ PathT $\rightarrow$ real
+
+\noindent turn\_angle($i$, $p$) $ = \arccos\left(\frac{\mbox{dot(i, p)}}{\mbox{mangtiude\_product(i, p)}}\right) $
+
+
+~\newline
+\noindent {\it  // for a given index and path, it will return the product of the magnitude of the previous segement with the magnitude of the next segment, used in calculating turn angle}
+\newline
+\noindent magnitude\_product: integer $\times$ PathT $\rightarrow$ real
+
+\noindent magnitude\_product($i$, $p$) $ = (p.\mathrm{getval(i - 1).dist}(p.\mathrm{getval(i)}))(p.\mathrm{getval(i).dist}(p.\mathrm{getval(i + 1)})) $
+
+~\newline
+\noindent {\it  // there are two vectors. the first points from the previous point to the current point, and the second points from the current point to the next point. this method returns the dot product of those two vectors. the first term represents the product of the x-components, the second term is the product of the y-coordinates}
+\newline
+\noindent dot: integer $\times$ PathT $\rightarrow$ real
+
+\noindent dot($i$, $p$) $ = (p.\mathrm{getval(i).xcrd()} - p.\mathrm{getval(i - 1).xcrd()})(p.\mathrm{getval(i + 1).xcrd()} - p.\mathrm{getval(i).xcrd()}) + (p.\mathrm{getval(i).ycrd()} - p.\mathrm{getval(i - 1).ycrd()})(p.\mathrm{getval(i + 1).ycrd()} - p.\mathrm{getval(i).ycrd()}) $
+
+
+
+
+~\newline
+\noindent {\it // calculates the total turning angle by adding up all the turning angles for each point in the path. The arccos function always returns a non-negative value between 0 and $\pi$, so we do not need to worry about whether the robot turned left or right}
+
+\noindent total\_angle:  PathT $\rightarrow$ real
+\newline
+\noindent total\_angle($p$) = $ +(i : \mathbb{N} | 1 \leq i < p.\mbox{size()} - 1 : \mbox{turn\_angle(i, p)})  $
+
+\end {document}

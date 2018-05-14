@@ -1,0 +1,204 @@
+\documentclass[12pt]{article}
+
+\usepackage{paralist}
+\usepackage{listings}
+\usepackage{amsfonts}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+
+\title{2ME3 Assignment 2}
+\author{Justin Staples (staplejw)}
+\date{February 27, 2017}
+\begin {document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\tableofcontents
+
+\thispagestyle{empty}
+
+\newpage
+
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+The purpose of this report is to document the results of creating and testing the following Python modules: {\tt pointADT.py}, {\tt lineADT.py}, {\tt circleADT.py} and {\tt deque.py}. The report contains an analysis of the original test results, as well as the results from a secondary set of tests, using a {\tt circleADT.py} that was provided by a partner. All source files (original and partner's), as well as the corresponding Makefile, can be found in the appendices (A - G).
+
+\section{Testing the Modules}
+
+The main idea behind selecting test cases was to ensure that the tests show the core functionality of each method. For methods that are simple or methods that have relatively trivial implementations, only a single test case was chosen to show that the method behaves exactly as intended in a common case. However, for many methods, extra `edge' cases were added (as specified by the interface). As well, all of methods in the {\tt deque.py} module that contain exceptions were tested to show that they raise the correct exception in the right circumstance.
+
+It is assumed that the person using the module would understand the different data types available and would not attempt to input incorrect data types into the constructor methods or the double ended queue. For this reason, the modules are not considered robust and no effort was made to test this kind of behaviour. The tests just focus on ensuring that the methods give the correct output, assuming the correct input type is given. 
+
+The tests were conducted using PyUnit, a unit testing framework that allows test classes to be created. Within these classes, individual tests can be created to test one method at a time. 
+
+\subsection{Point Module Tests}
+
+The methods from this module are all relatively straightforward. As a set up routine, a number of instances of PointT were created and used to test the methods. The getter methods ({\tt xcrd} and {\tt ycrd}), as well as the {\tt dist} method were just tested once to show basic functionality. However, there were a few extra cases added for the {\tt rot} method to show that it functions well for a variety of angles. Tests were conducted that used positive angles, negative angles, an angle of 0 radians and an angle greater than $\pi$ radians.
+
+\subsection{Line Module Tests}
+
+As a set up routine, a number of instances of LineT were created and used to test the methods. Similar to the tests in {\tt pointADT.py}, the getter methods for this module ({\tt beg} and {\tt end}) are just tested once to show they behave properly. {\tt len} is tested twice, once with a line of non-zero length (where the beginning and ends points are different) and another with a line of zero length (where the beginning points are the same). Here, {\tt mdpt} is tested in a very similar way, using one typical line and another where the length is zero. The {\tt rot} method for this module is tested in the exact same way as in the {pointADT.py} module, using a variety of different angles.
+
+\subsection{Circle Module Tests}
+
+As a set up routine, a number of instances of CircleT were created and used to test the methods. The set up routine for this test class also includes a few anonymous functions that are, in particular, used for testing {\tt force}. The getter methods for this module ({\tt cen} and {\tt rad}) are tested just once, as is {\tt area} to show basic behaviour. There were multiple test cases considered for {\tt intersect}. There are multiple configurations for pairs of circles, and it was decided to pick tests that show one pair that do intersect and one pair that do not. The first pair of circles intersect at a point, where as the second pair of circles do not intersect at all. A simple test for {\tt connection} was conducted to check that the correct instance of LineT was returned. The {\tt force} method was tested using the anonymous functions defined in the set up routine, alongside a few instances of CircleT. Here, two tests were conducted that show that the method returns the correct value for gravitational force. The two tests choose different circles with varying radii and distances to each other. Each test is also conducted with a different lambda function to show that it works in a variety of circumstances. 
+
+\subsection{Deque Module Tests}
+
+This module has the exact same set up routine as {\tt circleADT.py}. All of the methods for changing or accessing the front or back of the queue (push, pop, get) were tested multiple times. One test with just one cirlce in the queue and another with three circles in the queue to show that the methods work for any amount of circles. All of these methods were also tested with a full or empty queue where appropriate to make sure that they raise the correct exceptions. The {\tt size} method was tested with an empty queue to make sure that it returned a size of 0. It was also tested with a non-zero number of circles. This was to show that the size method returns the correct value for any number of elements in the queue. Because {\tt disjoint} analyzes all the elements in the queue, there are a lot of possible cases to test. First, the method was tested with an empty queue to show that it raises the 	EMPTY exception. Next, it was tested with just a single circle. Based on the specification of {\tt disjoint} the method should return {\tt True} for a queue with just one circle. A further exlpanation of this output is given in the discussion section. Two more tests were conducted for this method, one where all the circles in the queue were disjoint and one where they were not. Since the method returns a boolean, it is essential to have a test case for each boolean value. For {\tt sumFx} one simple test was done using one of the anonymous functions given in the set up routine. It used three circles to check that the method gives the correct sum of forces in the x direction. More tests could have been added to this method because there are so many possible inputs. It would have been good to test circles that are not just on the x-axis, but rather all over the xy-plane. It also would have been good to test a symmetrical set of circles to show that the gravitational force sums to zero. In the interest of time, these tests were not implemented. 
+
+\subsection{Results with Original circleADT.py}
+
+PyUnit considers each method one test. Over the four modules, 25 total tests were designed to test all of the methods at least once. In many cases, methods were given more than one test.
+
+The main result of running the testing module is that the modules ({\tt lineADT.py}, {\tt pointADT.py}, {\tt circleADT.py} and {\tt deque.py}) passed all 25 tests. 
+
+Overall, the tests that were selected were just aiming to show that the functions work in basic circumstances. The tests were designed to be thorough, but not exhaustive. In the interest of time, most methods were not tested to the extreme or given many rare cases. They were just tested to show that they met the specification. To be even more certain that the modules are correct, more tests could have been selected that test the methods more rigorously. 
+
+\subsection{Results with Partners circleADT.py}
+
+The main result of running the testing module with the partners circle module is that the modules ({\tt lineADT.py}, {\tt pointADT.py}, {\tt circleADT.py} and {\tt deque.py}) passed all 25 tests. 
+
+\section{Discussion}
+
+This section outlines some of the shortcomings of the original program code, the partners implementation, as well as the specification of the modules given in the assignment. Some possible improvements are mentioned, along with a brief discussion of the lessons learned during this exercise. 
+
+\subsection{Learning Achievements}
+
+I really enjoyed working on this assignment because it introduced me to a completely new programming paradigm, functional programming. Learning about anonymous functions, as well as the different functional methods like filter, map, and reduce were really interesting to me. It felt really powerful to learn about these and made me realize just how many different ways you can program. I hope to expand on this knowledge in the future. I also enjoyed learning about PyUnit. It proved very useful for testing the methods and I like how it gave a summary of the output, saying which tests passed or failed and why. On top of these things, I would say that my overall skill in programming in python has improved. I have learned more about how to handle exceptions in python, and I think my understanding of import statements has also grown. 
+
+\subsection{Original Modules}
+
+I am confident in the code that I have written and I do not have many negatives to comment on, but I do think I could have done some things differently in the future. All of the getter methods for my modules return a reference to the objects instance variables. This is not a problem when the instance variables are primitives like floats, but in {\tt lineADT.py} or {\tt circleADT.py}, the instance variables are objects. My methods return a reference to these objects instead of returning a new object. This could create some strange behaviour if the objects instance variables are changed at some point, which could be undesirable. The safe thing to do would be to return a new object. 
+
+Overall, I would say that my implementations were concise and efficient, but I do think some improvements could have been made. For the {\tt disjoint} method in {\tt deque.py}, I would have liked to use map/filter/reduce to give the output, but decided to implement it as a nested for loop. I do think my current implementation is understandable/readable, but it is a bit lengthy. 
+
+My {\tt deque.py} module has a global variable at the top of the file, G. I was using this for some preliminary tests earlier on in the development and forgot to remove it. It does not really create any problems, but it is unused and unnecessary in this module. 
+
+\subsection{Partners Modules}
+
+I did not notice any major problems with my partner's code. I would say that our style and implementations were extremely similar. My partner did not use a hard text wrap of 80 columns for their code, which some could argue is not the best for readability. As well, the partner's circle module has import statements for both the line and point module, which I consider a little bit redundant because the line module already imports all the methods from point itself, so it is not necessary to have this. These are extremely small details and I would say that overall the partner's code is very well done.
+
+\subsection{Specification} 
+
+I actually really loved having the formal specifiation. It made everything extremely clear. I always knew what to do and there were basically zero ambiguities. In Assignment 1, there were many instances where I had to make a design decision myself (like deciding how to rank or which definition of intersect to use), which is bound to lead to inconsistencies in the implementations. With the formal specification, it was perfectly clear. It was basically automatic. Having the formal specification made everything easier because I just followed the instructions and did what I had to do. There was no confusion because there was no other way to do it other than what the specification asked for. It made the mapping from specification to code quite mechanical, which I enjoyed. I didn't have any real problems with the specification. At first I found the notion of local functions a little bit confusing and was not sure how to handle these or if they were necessary. However, after Dr. Smith's clariciation that they did not have to be implemented, it made a lot more sense. Overall, having a strong understanding of discrete mathematics made the specification very enjoyable to read and work with. 
+
+\subsection{PyUnit}
+
+I definitely preferred using PyUnit compared to writing my own custom test module. PyUnit allows you to create different test classes, where each class represents a module that you would like to test. Within these test classes, you can have many different methods that tests the methods you wrote. This structure is extremely useful for organizing your tests. It is very convenient to have each PyUnit test method correspond to one of the methods you are testing. You can have many tests for one method all within one testing method. Another major advantage of using PyUnit is that it prints out a summary of the test results. The summary shows you which test pass and fail, and for the ones that fail, it gives you a reason why. It also shows the time that it took to run all of the tests.
+
+PyUnit gives you access to a wide range of functions for testing, like {\tt assertTrue} and {\tt assertEquals}. It even has built in functions for testing to see if certain exceptions are raised ({\tt assertRaises})! This was extremely useful for this assignment. These methods are part of a library of functions that are very reliable. They are standard and reusable. 
+
+\subsection{Specification of totalArea}
+
+The specification for the output of {\tt totalArea} is as follows:
+
+$$out := +(i: \mathbb{N} | i \in ([0 .. |s|-1]):
+  s[i].\mbox{area()})$$
+
+\subsection{Specification of averageRadius}
+
+The specification for the output of {\tt averageRadius} is as follows:
+
+$$ out := \frac{+(i: \mathbb{N} | i \in ([0 .. |s|-1]):
+  s[i].\mbox{rad()})} {\mbox{Deq\_}\mbox{size()}}$$
+
+\subsection{Critique of Circle Module}
+
+I will give a short critique of the circle module based on module qualities discussed in class. 
+
+\begin{itemize}
+\item
+Consistent: This module is consistent. The naming conventions and overall style of the module are common for all methods and are easy to follow.
+\item
+Essential: This module is actually not essential. {\tt connection} creates a line between the centers of the two circles. {\tt len}, from the line module, could be used to find the length of this line. Once this is known, the length could be compared against the radii of the circles to determine intersection. Because {\tt intersect} could be provided by a combination of other routines, the module is not essential. 
+\item
+General: It could be argued that the interface is not that general because it only offers one way to do each service. In python, there are many different ways to read from a file, which means that it is general in this sense, because the designers have tried to anticipate many different ways users might want to read from a file. In the circle module, there is only one way to access each service, so it could be said that it is not very general in that way.
+\item
+Minimal: This module is minimal because each access routine only offers one independent service.
+\item
+Opaque: This module is not entirely opaque. It is implemented in python, and in python, variables that you declare private are not truly private, meaning that the user still has access to these. 
+\end{itemize}
+
+\subsection{Disjoint}
+
+The specification for {\tt disjoint} is a universal quantification. Because there exist no values for i and j that satisfy the range, this is a quantification over an empty set. In this case, the function should just return the identity of the quantifier operator. The identity of conjuction (and) is True, and so the function should output True when there is only one circle in the queue. This is similar to summing all the values in an empty set, which would return the identity of +, which is 0. This makes sense because what the disjoint function asks is "are there any pairs of circles that are overlapping?". Because there are no pairs at all, the answer is no, and so the set is disjoint. This is the same result as calculated by my code. 
+
+
+
+
+
+
+
+
+
+\newpage
+
+\appendix
+
+\lstset{language=Python, basicstyle=\tiny,breaklines=true,showspaces=false,showstringspaces=false,breakatwhitespace=true}
+
+\def\thesection{\Alph{section}} 
+
+\section{Code for pointADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/pointADT.py}
+
+\newpage
+
+\section{Code for lineADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/lineADT.py}
+
+\newpage
+
+\section{Original Code for circleADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/circleADT.py}
+
+\newpage
+
+\section{Code for deque.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/deque.py}
+
+\newpage
+
+\section{Code for testCircleDeque.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/testCircleDeque.py}
+
+\newpage
+
+\section{Code for Makefile} \label{CircleSect}
+
+\noindent \lstinputlisting{../Makefile}
+
+\newpage
+
+\section{Partners Code for circleADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/srcPartner/circleADT.py}
+
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+\end {document}

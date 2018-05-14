@@ -1,0 +1,379 @@
+\documentclass[12pt]{article}
+
+\usepackage{paralist}
+\usepackage{listings}
+\usepackage{amsfonts}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+
+\title{2ME3 Assignment 4}
+\author{Justin Staples (staplejw)}
+\date{April 5, 2017}
+\begin {document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\tableofcontents
+
+\thispagestyle{empty}
+
+\newpage
+
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+The purpose of this software design exercise to design and specify a set of modules that are capable of storing the state of a typical game of battleship. In terms of the MVC design pattern, these modules represent the model. They store the current state of the game. They are able to keep track of the state of the board, and whose turn it is. 
+
+This design has three modules. The first is a basic abstract data type, called CellT, that represents one single cell of the game board. It stores information about whether or not that cell has a ship on it and also whether or not the cell has been the target of a shot.
+
+The second module, BoardT, is another abstract data type that represents the state of the game for 1 player. It contains a two dimensional sequence of cells, as well a few other state variables that describe the turn status, or which shots have been fired. 
+
+The third module, called Battleship, stores the entire game state. In contains two state variables, one board for each of the players, and a routine to initialize the boards. Each board can be accessed individually to place ships and fire shots. 
+
+The interface presented is believed to be minimal, meaning that all access routines presented provide just one service. As well, the interface is essential in the sense that all of the access routines are necessary and provide a unique functionality. There are a few routines that perform similar functionality, but the rationale for why they are kept is provided in the comments section of the MIS. Lastly, the interface is general. It is general because not only does it allow for the standard game of battleship to be played, it also allows variants of the game to be played. Such variants include games where the dimensions of the board are variable, where the number of ships can be up to 5, not exactly 5, and where the dimensions of the ships are also adjustable and not limited to sizes between 2 and 5. 
+
+\newpage
+
+\section {Cell ADT Module}
+
+\subsection*{Template Module}
+
+CellT
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+CellT = ?
+
+\subsubsection* {Exported Constants}
+
+N/A
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+CellT & ~ & CellT & ~\\
+\hline
+getShipID & ~ & integer & ~\\
+\hline
+getShot & ~ & boolean & ~\\
+\hline
+setShipID & integer & ~ & InvalidShipIdException\\
+\hline
+setShot & boolean & ~ & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$shipID$ : integer\\
+$shot$ : boolean
+
+\subsubsection* {State Invariant}
+
+none
+
+\subsubsection* {Assumptions}
+The constructor CellT is called before any other access routine is. The constructor cannot be called on an existing object.
+
+\subsubsection* {Access Routine Semantics}
+
+CellT():
+\begin{itemize}
+\item transition: $shipID, shot := -1, false $
+\item output: $out := \mathit{self}$
+\item exception : none
+\end{itemize}
+
+\noindent getShipID():
+\begin{itemize}
+\item output: $out := shipID$
+\item exception: none
+\end{itemize}
+
+\noindent getShot():
+\begin{itemize}
+\item output: $out := shot$
+\item exception: none
+\end{itemize}
+
+\noindent setShipID($i$):
+\begin{itemize}
+\item transition: $shipID := i$
+\item exception: $$\neg (0 \leq i \leq 4) \Rightarrow \mbox{InvalidShipIdException}$$
+\end{itemize}
+
+\noindent setShot($b$):
+\begin{itemize}
+\item transition: $shot := b$
+\item exception: none
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section {Board ADT Module}
+
+\subsection*{Template Module}
+
+BoardT
+
+\subsection* {Uses}
+
+CellT
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+BoardT = ?
+
+\subsubsection* {Exported Constants}
+
+MAX\_SHIPS = 5
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+BoardT & integer, integer, boolean & BoardT & InvalidSizeException\\
+\hline
+getCells & ~ & sequence [][] of CellT & ~\\
+\hline
+placeShip & integer, integer, integer, integer & ~ & OutOfBoundsException \\
+~ & ~ & ~ & InvalidShipException\\
+\hline
+isMyTurn & ~ & boolean & ~\\
+\hline
+changeTurn & ~ & ~ & ~\\
+\hline
+fireShot & integer, integer, BoardT & ~ & OutOfBoundsException \\
+~ & ~ & ~ & InvalidShotException\\
+~ & ~ & ~ & WrongPlayerException\\
+\hline
+pastShot & integer & tuple of (i, j : integer) & OutOfBoundsException\\
+\hline
+didItHit & integer, BoardT & boolean & OutOfBoundsException\\
+\hline
+isLoser & ~ & boolean & ~\\
+\hline
+progress & BoardT & real & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$r$ : integer\\
+$c$ : integer\\
+$s$ : sequence of [sequence of CellT]\\
+$myTurn$ : boolean \\
+$myShots$ : sequence of [tuple of (i, j : integer)]\\
+$shipCounter$ : integer
+
+\subsubsection* {State Invariant}
+
+$shipCounter \leq \mbox{MAX\_SHIPS}$
+
+\subsubsection* {Assumptions}
+The constructor BoardT is called before any other access routine is. The constructor cannot be called on an existing object.
+
+\subsubsection* {Access Routine Semantics}
+
+BoardT($rows$, $columns$, $turn$):
+\begin{itemize}
+\item transition: $r, c, s, myTurn, myShots, shipCounter := rows, columns, ~sequence ~[rows][columns]~ of\newline ~CellT, turn, <>, 0$ 
+\item output: $out := \mathit{self}$
+\item exception : $$ \neg (r > 0 \wedge c > 0) \Rightarrow \mbox{InvalidSizeException} $$
+\end{itemize}
+
+\noindent getCells(): {\it // getter method for two dimensional sequence of cells. by indexing into this, any cell of the game board can be examined}
+\begin{itemize}
+\item output: $out := s$
+\item exception: none
+\end{itemize}
+
+\noindent placeShip($i$, $j$, $k$, $l$): {\it // i and j represent the row and column indices of the start of the ship and k and l are the indices of the end of the ship. i must be a smaller index than k, j must be a smaller index than l}
+\begin{itemize}
+\item transition: $shipCounter := shipCounter + 1 \mbox{and} ~s ~\mbox{such that}$ 
+$$ \forall (a, b : \mathbb{N} | i \leq a \leq k \wedge j \leq b \leq l : s[a][b].\mbox{setShipID(ShipCounter)})$$
+{\it// for all cells on the board that are covered by the ship, give those cells a unique shipID, then increment the ship counter}
+\item exception: 
+$$ \neg (0 \leq i < r \wedge 0 \leq k < r \wedge 0 \leq j < c \wedge 0 \leq l < c) \Rightarrow \mbox{OutOfBoundsException} $$
+$$ i > k \vee j > l \Rightarrow \mbox{InvalidShipException} $$
+$$ \neg (k - i = 0 \vee l - j = 0) \Rightarrow \mbox{InvalidShipException} $$ 
+$$ shipCounter = 5 \Rightarrow \mbox{InvalidShipException}$$
+$$ \exists (a, b : \mathbb{N} | i \leq a \leq k \wedge j \leq b \leq l : s[a][b].\mbox{getShipID()} \geq 0 ) \Rightarrow \mbox{InvalidShipException}$$
+
+{\it // out of bounds exception if the indices are not in the range of the board dimensions. there are four ways to throw an InvalidShipException. if i is bigger than k or j is bigger than l, if the ship is placed on a diagonal, if the board already 5 valid ships, or if any of the spots that the ship occupies already have a ship on them}
+\end{itemize}
+
+\noindent isMyTurn():
+\begin{itemize}
+\item output: $out := myTurn$
+\item exception: none
+\end{itemize}
+
+\noindent changeTurn(): {\it // isMyTurn and changeTurn are kept as separate methods in the event that the client wants to check the turn status without changing it. they are also kept separate to avoid having access programs that change state and return a value}
+\begin{itemize}
+\item transition: $myTurn := \neg myTurn$
+\item exception: none
+\end{itemize}
+
+\noindent fireShot($i$, $j$, $b$):
+\begin{itemize}
+\item transition: $myShots, myTurn := myShots ~|| <(i, j)>, false $
+ \newline as well as 
+$b.\mbox{getCells[i][j].setShot(true)}$ and $ b.\mbox{changeTurn}$
+\item exception: 
+$$ \neg (0 \leq i < r \wedge 0 \leq j < c) \Rightarrow \mbox{OutOfBoundsException} $$
+$$ b.\mbox{getCells[i][j].getShot()} \Rightarrow \mbox{InvalidShotException}$$
+$$ b.\mbox{isMyTurn} \Rightarrow \mbox{WrongPlayerException} $$
+$$ \neg myTurn \Rightarrow \mbox{WrongPlayerException} $$
+\end{itemize}
+
+\noindent pastShot($k$): {\it // used to examine the coordinates of the shot at index k in the myShots sequence. pastShot and didItHit have similar functionality, but I decided to keep them separate in the event that the player would want to check if they made a shot without necessarily checking to see if it hit. As well, both of these methods return a different type of value. One returns a tuple of integers while the other returns a boolean. I thought it would feel very clunky to have a method that returns a tuple of these two types }
+\begin{itemize}
+\item output: $out := myShots[k]$
+\item exception: 
+$$ \neg (0 \leq k < |myShots|) \Rightarrow \mbox{OutOfBoundsException} $$
+\end{itemize}
+
+\noindent didItHit($k$, $b$): {\it // did the shot k hit the board b? the tuple from myShots is used to examine that cell of the board. if its shipID is non-negative, then that spot has a ship and so it was a hit. the method returns true if it was a hit}
+\begin{itemize}
+\item output: $out := b.\mbox{getCells[myShots[k].i][myShots[k].j].getShipID} \geq 0$
+\item exception: 
+$$ \neg (0 \leq k < |myShots|) \Rightarrow \mbox{OutOfBoundsException} $$
+\end{itemize}
+
+\noindent isLoser(): {\it // checks the board to see if all of the cells that have a ship on them have been shot at}
+\begin{itemize}
+\item output: $out := all\_ships\_sunk(self)$
+\item exception: none
+\end{itemize}
+
+\noindent progress($b$): {\it // to give an idea of how the player is doing, this method returns a percentage out of a 100. it is the ratio of ship cells that they have hit to the total ship cells on the enemy board}
+\begin{itemize}
+\item output: $out := 100 \cdot \frac{\mbox{ship\_cells\_hit(b)}}{\mbox{total\_ship\_cells(b)}}$
+\item exception: none
+\end{itemize}
+
+\subsubsection* {Local Functions}
+
+\noindent all\_ships\_sunk: BoardT $\rightarrow$ boolean
+
+\noindent all\_ships\_sunk($s$) $\equiv \forall (i, j : \mathbb{N} | b.\mbox{getCells}[i][j].\mbox{getShipID()}\geq 0 : b.\mbox{getCells}[i][j].\mbox{getShot()})  $
+\newline {\it // for all cells on the board where there is a ship, that cell has been shot}
+
+~\newline
+\noindent ship\_cells\_hit: BoardT $\rightarrow$ integer
+
+\noindent ship\_cells\_hit($b$) $ = + (i, j : \mathbb{N} | b.\mbox{getCells}[i][j].\mbox{getShot()} \wedge b.\mbox{getCells}[i][j].\mbox{getShipID()}\geq 0 : 1)  $
+\newline {\it // count the number of cells on the board that have been hit and have a ship}
+
+~\newline
+\noindent total\_ship\_cells: BoardT $\rightarrow$ integer
+
+\noindent total\_ship\_cells($b$) $ = + (i, j : \mathbb{N} | b.\mbox{getCells}[i][j].\mbox{getShipID()}\geq 0 : 1)  $
+\newline {\it // count the number of cells on the board that have a ship}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section {Battleship Module}
+
+\subsection*{Module}
+
+Battleship
+
+\subsection* {Uses}
+
+BoardT
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Constants}
+
+N/A
+
+\subsubsection* {Exported Types}
+
+N/A
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | p{7cm} |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+init & integer, integer & ~ & InvalidSizeException\\
+\hline
+player1 & ~ & BoardT & ~\\
+\hline
+player2 & ~ & BoardT & ~\\
+\hline
+
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$p1$: boardT\\
+$p2$: boardT\\
+
+\subsubsection* {State Invariant}
+
+N/A
+
+\subsubsection* {Assumptions}
+
+The init method is called for the abstract object before either of the game boards can be accessed.  The init method can be used to return the state of the game to the state of a new game.
+
+Both players should place all of their ships before the first shot is fired and should not place anymore ships after the first shot is fired. 
+
+\subsubsection* {Access Routine Semantics}
+
+init($r$, $c$): {\it // initialize two battleship boards called player 1 and player 2. the boards are given dimensions based on user input. the boards are initialized so that it is player 1's turn to start}
+\begin{itemize}
+\item transition: $ p1, p2 := \mbox{BoardT}(r, c, true), \mbox{BoardT}(r, c, false) $
+\item exception : $$ \neg (r > 0 \wedge c > 0) \Rightarrow \mbox{InvalidSizeException} $$
+\end{itemize}
+
+\noindent player1():
+\begin{itemize}
+\item output: $out := p1$
+\item exception : none
+\end{itemize}
+
+\noindent player2():
+\begin{itemize}
+\item output: $out := p2$
+\item exception : none
+\end{itemize}
+
+
+
+\end {document}f
