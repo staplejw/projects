@@ -1,0 +1,106 @@
+		.data
+j_:		.space 4
+i_:		.space 4
+a_:		.space 4
+		.text
+		.globl p
+		.ent p
+p:
+							# offset(u) = 20
+							# offset(v) = 16
+							# offset(w) = 12
+							# offset(x) = 8
+							# offset(y) = 4
+							# offset(z) = 0
+		sw $fp, -28($sp)	# M[$sp - parametersize - 4] := $fp
+		sw $ra, -32($sp)	# M[$sp - parametersize - 8] := $ra
+		sub $fp, $sp, 24	# fp := $sp - parametersize
+		sub $sp, $fp, 8		# $sp := $fp − 8
+		lw $t0, 20($fp)		# $t0 := M[$fp + offset(u)] ( = adr(u))
+		addi $t5, $0, 1		# $t5 := 1
+		sw $t5, 0($t0)		# M[$t0] := $t5 (M[adr(u)] = 1)
+		lw $t2, 20($fp)		# $t2 := M[$fp + offset(u)] ( = adr(u))
+		lw $t6, 0($t2) 		# $t6 := M[$t2] ( = u)
+		beq $t6, $0, L1		# if $t6 == false then branch to L1 (if u == false then branch to L1)
+L2:
+		lw $t8, 16($fp)		# $t8 := M[$fp + offset(v)] ( = adr(v))
+		lw $t8, 0($t8)		# $t8 := M[$t8] ( = v)
+		beq $t8, $0, L3		# if $t8 == false then branch to L3 (if v == false then branch to L3)
+L4:
+		addi $t4, $0, 1		# $t4 := 1 (v = true)
+		b, L5				# branch to L5
+L3:
+L1:
+		addi $t4, $0, 0		# $t4 := 0 (v = false)
+L5:
+		sw $t4, 16($fp)		# M[$fp + offset(v)] := $t4 (0 or 1 depending on the values of u and v)
+		lw $t1, 8($fp)		# $t1 := M[$fp + offset(x)] ( = adr(x))
+		lw $t7, 12($fp)		# $t7 := M[$fp + offset(w)] ( = adr(w))
+		add $t7, $t7, 3		# $t7 := $t7 + 3 (w = w + 3)
+		sw $t7, 0($t1)		# M[$t1] := $t7 (x = w)
+		addi $t3, $0, 5		# $t3 := 5
+		sw $t3, 12($fp)		# M[$fp + offset(w)] := $t3 (w = 5)
+		lw $t5, 4($fp)		# $t5 := M[$fp + offset(y)] ( = adr(y))
+		addi $t2, $0, 7		# $t2 := 7
+		lw $t6, 0($fp)		# $t6 := M[$fp + offset(z)] ( = adr(z))
+		sub $t2, $t2, $t6	# $t2 := $t2 - $t6 ($t2 = 7 - z)
+		sw $t2, 0($t5)		# M[$t5] := $t2 (y = 7 - z)
+		add $sp, $fp, 24	# $sp := $fp + parametersize
+		lw $ra, −8($fp)		# M[$fp - 8] := $ra
+		lw $fp, −4($fp)		# M[$fp - 4] := $fp
+		jr $ra				
+		.text
+		.globl main
+		.ent main
+main:
+		la $t8 , a_			# $t8 := adr(a)
+		sw $t8, −4($sp)		# M[$sp − 4] := $t8 (first parameter - a)
+		addi $t4, $0, 1		# $t4 := 1
+		sw $t4, −8($sp)		# M[$sp - 8] := $t4 (second parameter - true)
+		addi $t7, $0, 7		# $t7 := 7 
+		sw $t7, −12($sp)	# M[$sp - 12] := $t7 (third parameter - 7)
+		la $t3 , i_			# $t3 := adr(i)
+		sw $t3, −16($sp)	# M[$sp - 16] := $t3 (fourth parameter - i)
+		la $t2 , j_			# $t2 := adr(j)
+		sw $t2, −20($sp)	# [$sp - 20] := $t2 (fifth parameter - j)
+		addi $t6, $0, 9		# $t6 := 9
+		sw $t6, −24($sp)	# M[$sp - 24] := $t6 (sixth parameter - 9)
+		jal, p 				# jump and link to the target address of the procedure p
+		lw $t8, a_			# $t8 := M[adr(a)] 
+		beq $t8, $0, L6		# if $t8 == false then branch to L6 (if a then )
+L7:
+		lw, $a0, j_			# $a0 := j
+		li $v0, 1 			# $v0 := 1
+		syscall				# system call, $v0 = 1 means print integer
+L6:
+		li $v0, 10			# $v0 := 10
+		syscall				# system call, $v0 = 10 means exit
+		.end main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

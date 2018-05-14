@@ -1,0 +1,14 @@
+DFS: BOSTON, NEW YORK CITY, PITTSBURGH, COLUMBUS, CHICAGO, ST. LOUIS, KANSAS CITY, MINNEAPOLIS
+BFS: BOSTON, NEW YORK CITY, PITTSBURGH, COLUMBUS, CHICAGO, MINNEAPOLIS
+
+City			|Meal										 |Cost									
+--------------------------------------------------------------------
+BOSTON			|N/A										 |N/A
+NEW YORK CITY   |McChicken - Meal (McD)                      |$3.79					
+PITTSBURGH      |Double Cheeseburger - Meal (McD)            |$4.38					
+COLUMBUS        |Quarter Pounder with Cheese - Meal (McD)    |$5.49					
+CHICAGO         |Filet-O-Fish - Meal (McD)                   |$5.49					
+MINNEAPOLIS     |Double Cheeseburgers - Meal (Bur)           |$5.49					
+--------------------------------------------------------------------
+TOTAL														  $24.64
+

@@ -1,0 +1,164 @@
+\documentclass[12pt]{article}
+
+\usepackage{paralist}
+\usepackage{listings}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+
+\title{2ME3 Assignment 1}
+\author{Justin Staples (staplejw)}
+\date{February 2, 2017}
+\begin {document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\tableofcontents
+
+\thispagestyle{empty}
+
+\newpage
+
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+The purpose of this report is to document the results of creating and testing the following Python modules: {\tt CircleADT.py}, {\tt Statistics.py}, and {\tt testCircles.py}. The report contains an analysis of the original test results, as well as the results from a secondary set of modules provided by a partner. All source files, as well as the corresponding makefile, can be found in the appendices (A - F).
+
+\section{Testing the Modules}
+
+The main objective for selecting the test cases was to choose tests that showcase the core functionality of each method. Basically, because only one test was required per method, it is essential to pick a test that shows the method is working in a common case. In the interest of time and simplicity, only the most basic tests were selected. However, for some methods, extra `edge' cases were added (as specified by the interface). 
+
+For the purposes of testing, it was assumed that the person using the program would understand that the data type was intended to represent a circle, and would not input values other than real numbers (or non-negative real numbers for methods that involved a radius). So, no tests were selected that showcased this behaviour.
+
+\subsection{Original Modules}
+
+The main result of running the testing suite is that both modules ({\tt CircleADT.py} and {\tt Statistics.py)} passed all tests. 
+
+For the {\tt area} method in {\tt CircleADT.py}, an extra test was selected to see if the method would return an area equal to 0 in the case that the input radius was 0, which it did. A cirlce with a radius equal to 0 can be thought of as a point. The methods {\tt insideBox} and {\tt intersect} (from {\tt CircleADT.py}) had a few extra cases added. This is because there are multiple common cases available to test. It was intended to show that the methods worked well in varying circumstances. For example, the {\tt insideBox} method was tested three times: one test with the circle entirely outside the box, one with the circle entirely inside the box, and one with the circle completely inside the box, but intersecting the border of the box as well. A similar principle was used to test the {\tt intersect} method: one test for two circles that have 0 points in common, one with two circles that have 1 point in common, and another with two circles that have an infinite number of points in common (that is to say they overlap). Lastly, for the {\tt rank} method, a small group of circles were chosen, of varying radii. The first test follows the example from the MIS exactly, sorting an array of values where each element is different. The second test ranks an array of values where there is a tie for first place. The last test ranks an array of values where there is a tie for another place that is not first. 
+
+It might be worth noting that the tests were planned and created after the modules were written, and that the modules were not edited during the implementation of the testing suite.
+
+\subsection{Partners Modules}
+
+For the partners code, the main result of running the testing suite is that the {\tt CircleADT.py} module passed all tests, while the {\tt Statistics.py} did not. The reason that this happened is because of a design decision that differed between the partners code and the original implementation. The original source code will allow for the {\tt rank} method in {\tt Statistics.py} to skip values after a tie (e.g. it might give a ranking like [1, 2, 2, 4]), while the partners implementation does not, and ensures that ranks always step to the next available integer (e.g. it would give a ranking like [1, 2, 2, 3]). The details of how to handle ties were not made perfectly clear in the specification, and so it not hard to imagine why there were differences in the two implementations. 
+
+Other than the {\tt rank} method, all the other methods from the partners modules gave the expected output and passed the tests. 
+
+\section{Discussion}
+
+This section outlines some of the shortcomings of the original program code, the partners implementation, as well as the specification of the modules given in the assignment. Some possible improvements are mentioned, along with a brief discussion of the lessons learned during this exercise. 
+
+\subsection{Original Modules}
+
+In a real world application, it might not be best to assume that users will always enter valid input types. Entering other types (boolean, string, etc.) into the methods as arguments would certainly produce an error and cause the program to crash. Although handling these types of errors was not specified in the MIS, it might be a good idea to try to handle them, as it allows for a more robust program. 
+
+Although performance was not specified in the MIS as something of critical importance, it might have been worth it to consider different implementations of certain methods. The implementations that were chosen were meant to be `quick and dirty', and this could be considered a fault if someone using the module was intersted in speed or performance. For example, the algorithm used for ranking was more of a brute force method, and more optimal algorithms might be considered depending on the users needs. It was not specified in the MIS though, so the module remains correct even with a slower implementation.
+
+In terms of documentation, the Doxygen comments in the modules, in general, give a complete outline of the methods and their parameters. However, it was left out in the documentation of the {\tt average} and {\tt stdDev} methods, that the {\tt numpy} library is used to do the calculations. This might have been important to know for someone using the module or reading the documentation, and was not intended to be left out. It was intended to ensure comments always had a hard wrap of 80 character width, but there were a few instances where this is violated. This is a mistake that could be fixed in future with more careful planning and attention to detail.
+
+Lastly, there was a strong effort made to make sure that the style of the code was consistent (indentation, spacing, etc.), but there are a few spots where there is slight deviation. This is not considered a major problem, but something that could be improved upon for future projects.
+
+Overall, it is suggested by the results of the tests that the original modules are correct. However, a more rigorous and systematic testing suite could have been designed to further establish the programs correctness.
+
+\subsection{Partners Modules}
+
+The implementations written by the partner were overall quite similar to that of the original. The details of the code and overall style are quite similar, which makes perfect sense considering the nature of the assignment. This means that both sets of modules contain similar errors. The partners code also has slight inconsistencies in formatting (this is a very small issue, but could help readability if improved), but overall meets the specifications in terms of functionality. 
+
+It is worth noting that the partners implementation of the {\tt CircleADT.py} module contains an extra method called {\tt circumference}, which simply returns the circumference of a circle. This method was not part of the specification and should be viewed as unnecessary or incorrect to include it. 
+
+\subsection{Usage of External Libraries}
+
+An important design decision to be made during the implementation of this MIS is how to define the constant $\pi$. There are a few available options that were considered. The first, and perhaps simplest way to approximate $\pi$ would simply be to truncate the decimal at an arbitrary point, leaving only, say, the first 10 values after the decimal. This would lead to a very close approximation for calculating area or other things that required $\pi$. Another similar way to to estiamte $\pi$ would be to use its definition as an infinte sum, and instead of choosing an arbitrary number of decimals, you could just choose an arbitrary number of terms to include in the sum as an approximation. Although both of these methods could prove to be quite accurate, the problem with them is that the cutoffs for their precision are arbitrary and will depend on the person implementing the method. If many different approximations for $\pi$ were used by many different implementations, then surely testing the {\tt area} method with different code would lead to failures because all the results would be very close but not exactly the same. The way to combat this is to choose a standard value for $\pi$, that is both accurate and readily available to all programmers. For these reasons, the value of $\pi$ that was selected for the original implementations (and also selected by the partner) was the value given by the Python standard math library. Standardization is desirable to ensure that the code can be used again and again by many different clients without causing confusion, thereby increasing reusability.
+
+Another part of the specification for this assignment was to use the {\tt numpy} library for calculating averages and standard deviations. Using an external library like this has many benefits. It saves the programmer time and space. Others have already developed methods for calcuating average and standard deviation. Using the library helps increase productivity because the programmer does not have to implement these functions themselves. These functions are also essentialy guaranteed to be fast and correct. Although average and standard deviation are simple to implement, there may be much more complex functions, such as fast fourier transforms, or inverting a large matrix, where it is best to use the tools found in a standard library. This is because these libraries have already been tested extensively, meaning that they are correct and reliable. 
+
+\subsection{Closing Remarks}
+
+It would have been interesting to see how the original modules fared in a more rigorous testing environment. There are many other ways of testing the modules that were not explored. For example, as mentioned above, the modules might have been tested to see how they handle different input types. Perhaps even more complicated tests could have been designed to test how the modules reacted to a series of method calls, all in a row. For example, start with an instance of {\tt CircleT}, then scale it, translate it, and then test to see if it intersects with a particular box. Testing the methods in different combinations might reveal more about potential faults in the code. 
+
+It is certainly worth discussing the nature of the assignment, in terms of the specification and how it left some decisions up to the programmer. The choice of which value for $\pi$ to use, or which definition of intersection to use, and also how to rank a set of values which includes ties, all reveal that even slight ambiguities in the specification will lead to many different implementations. This could cause many problems in a real world application, where the user is expecting one thing and gets another because it was not made clear to the progammer exactly what to do. Surely, to avoid this kind of confusion, program specifications should be made as formal as possible, to allow the mapping from MIS to programming language more automatic. 
+
+\newpage
+
+\appendix
+
+\lstset{language=Python, basicstyle=\tiny,breaklines=true,showspaces=false,showstringspaces=false,breakatwhitespace=true}
+
+\def\thesection{\Alph{section}} 
+
+\section{Original Code for CircleADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/CircleADT.py}
+
+\newpage
+
+\section{Original Code for Statistics.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/Statistics.py}
+
+\newpage
+
+\section{Code for testCircles.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../src/testCircles.py}
+
+\newpage
+
+\section{Code for Makefile} \label{CircleSect}
+
+\noindent \lstinputlisting{../Makefile}
+
+\newpage
+
+\section{Partners Code for CircleADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../partner/CircleADT.py}
+
+\newpage
+
+\section{Partners Code for Statistics.py} \label{CircleSect}
+
+\noindent \lstinputlisting{../partner/Statistics.py}
+
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end {document}

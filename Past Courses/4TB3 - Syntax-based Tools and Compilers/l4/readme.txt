@@ -1,0 +1,1 @@
+For this lab, I am working with Mahmoud Khattab as my partner. I have prepared a solution for Question #2, while he has prepared a solution for Question #1. I believe that this is a fair split of the work. We both arrived at common understandings of eachothers work after having discussed the problems with one another. 
