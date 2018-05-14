@@ -1,0 +1,102 @@
+HOW TO USE THE PROGRAM:
+
+Default Mesh: When you type 'make', a program called Terrain.x will be created and run, and will initialize the grid to the following settings:
+- 50x50 grid
+- square, solid polygons
+- lighting off
+- flat shading
+- greyscale colour
+
+Key Bindings: You can change these settings by pressing the following keys which active in window_1 (mesh window):
+'w' : Toggles between solid polygons, wireframe, and both at the same time
+'r' : Redraws a random terrain that is the same size as the current gridsize (this does not reset the camera position)
+'s' : Toggles between flat shading and smooth shading
+'t' : Redraws the terrain using triangles
+'y' : Redraws the terrain using squares
+'i' : Toggles the current light between light0 and light1
+'u' : Increment the current light's x-coordinate 
+'j' : Decrement the current light's x-coordinate
+'k' : Increment the current light's z-coordinate
+'h' : Decrement the current light's z-coordinate
+'m' : Reset the position of the lights
+'l' : Toggle lighting on and off
+'q' : Force quits the program
+'left/right arrow keys' : Rotate the mesh about the y-axis
+'up/down arrow keys' : Rotate the mesh about the x-axis
+
+Mouse Bindings: You can click in both windows (window_1 and window_2) for additional features:
+window_1: You can right click to open the menu. This will allow the user to change the grid size. Keep in mind that changing 
+	the grid using the menu will reset the camera and light positions.
+window_2: You can right or left click on a part of the 2D greyscale heigt map. Left clicking will add a bump to the mesh, and right clicking
+	will add a dent. For both of these actions, the change that is made can be noticed in both windows. This means that left clicking the 
+	greyscale map will not only add a bump to the real mesh in window_1, but will also add a greyscale bump to window_2.
+
+
+Lighting: There are two white lights implemented, located above opposite corners of the grid. You can translate the position
+	of the lights along the x-axis ('u' for forward, 'j' for backward), or along the z-axis ('k' for right, 'h' for left).
+	The height of the lights will always be a constant dependent on the size of the grid. By default, the program starts 
+	out allowing you to control light0's position using the UHJK keys, and by toggling 'i', you can switch bewteen light0 
+	and light1. So, when the program starts out, the UHJK keys will be controlling light0's position, but if you press 'i', 
+	now UHJK will be controlling light1's position. Pressing 'i' again will switch back to light0, and so on and so forth. 
+	As you move the lights around, the x and z coordinates of the current light are printed in the terminal, so that you 
+	can keep track of where they are. Pressing 'm' will reset the position of the lights back to default. 
+
+Shading: The program implements two types of shading, flat and smooth. When flat shading is enabled, the glShadeModel is changed to
+	GL_FLAT and the mesh is also drawn using only face normals (by assigning only one normal per vertex). When smooth shading is 
+	enabled, the glShadeModel is changed to GL_SMOOTH and the mesh is also drawn using vertex normals (by assigning 4 normals to most
+	vertices in the square mesh, and 6 normals to most vertices in the triangle mesh).
+
+Bonus Features: I have chosen to implement bonus features 3 and 4. My 2D terrain map overview opens up in window_2, and you are able to click on 
+	this window to add bumps/dents to the mesh. The size of the window is always 300x300 pixels, and my orthographic projection is set up with 
+	a viewport of (0, 300, 0, 300). This ensures that all greyscale images that I draw in window_2 are mapped so that each point on the grid
+	is 1 pixel by 1 pixel. So, the 50x50 grid will display an image that is 50x50 pixels drawn in a window that is 300x300. If you are not 
+	selecting the 300x300 grid, then window_2 will have some black space located around the sides. If you are trying to modify the terrain by 
+	clicking, you must right or left click on a point that is actually on the mesh. If you click on one of the black points, you will just be 
+	prompted to reselect a point that is on the mesh. 
+
+
+NOTES/COMMENTS:
+
+-	grid, squareVertexNormals, and triangleVertexNormals are all meant to be variable sized arrays of objects.
+	This is why, each time they are created, I allocate and deallocate memory appropriately. 
+-	Without lighting on, all wireframe models are drawn using the colour red, but all polygon models are drawn 
+	using greyscale colour based on the heights. I did this to make it easier for the user to see both models
+	at the same time when the 'both' viewing mode is enabled. 
+-	I wanted to incorporate a menu into my program, so that is why I just chose to have 4 possible grid sizes. 
+	I thought that letting the user be able to select any size of grid would be a little overkill and unnecessary.
+-	Each size of grid has a corresponding height and radius that is used for its circles. The height and radius scale
+	with the gridsize to ensure that each grid appears to have the same general style/shape.
+-	The header file mesh.h contains declarations of all the data structures that I use for the program. This includes
+	3D points, 3D vectors, mesh faces, and colours. It also includes a small library of functions that are meant
+	to act on points/vectors, such as forming vectors from points, and calculating cross products.
+-	There are two ways that you can redraw the grid. You can either press 'r', which does not reset the camera position,
+	or you can use the menu to change the gridsize, which does reset the camear position. I wanted to provide
+	an option to reset the camera, but I think being able to redraw with 'r' and not reset the camera at the same
+	time is another cool feature.
+-	height is represented using the y-axis.
+-	Camera is originally set at negative x, postive y, negative z, looking at the origin. The mesh is always centered
+	at the origin. 
+-	The program uses backface culling. You can see this by checking my init(), or by rotating the camera around the x-axis
+	to the lowest possible viewpoint. You can notice that the back of faces have been culled.
+	The program uses double buffering. You can see this by checking my main() to see the call that I have made to 
+	glutInitDisplayMode() includes GLUT_DOUBLE, as well as my display functions that call glutSwapBuffers()
+-	The program uses two windows. 
+-	For viewing the terrain in triangle mode with flat shading, it is important to note that for flat shading, openGL gives
+	each flat-shaded triangle the colour of the last vertex listed. (This information can be found in specification for
+	glShadeModel (https://www.opengl.org/sdk/docs/man2/xhtml/glShadeModel.xml), under description. This means that with only 
+	two triangles per face (group of 4 gridpoints), and with some faces sharing vertices that are used to determine the colour, 
+	some triangles are the same colour as their neighbour, because they share the vertex that decides the colour. This is also 
+	the reason why when you are viewing the mesh in greyscale triangle mode with flat shading, two adjacent triangles (two triangles
+	within the same suare) will appear to have very different colour. This is because the bottom left triangle is being drawn 
+	using the height colour from the bottom left vertex of the square and the colour for the top right triangle is determined by the 
+	vertex from the top right. On a hill, these two points could have very different heights, meaning that the two adjacent triangles 
+	might have a different colour. 
+-	The camera control is partially limited to prevent the user from viewing the terrain from directly below. Basically, there
+	is a limit set on the amount of rotation about the x-axis. 
+-	It should be noted that for the larger meshes (200x200, 300x300) that some features are a bit laggy, notably the motion of the lights 
+	and pressing 'r' to re-randomize the mesh. Please give sufficient time between key presses to ensure that these features work on 
+	every key press. For example, on the lower size messhes, you can press and hold the UHJK keys to control the lights no problem, but on
+	the 300x300 mesh, I would recommend only pressing one key at a time, to ensure the program does not freeze. 
+
+
+	
